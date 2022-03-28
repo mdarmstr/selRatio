@@ -26,7 +26,7 @@ eR = X - x_scores @ x_loadings.T
 
 for vrbl in range(sz[1]):
     selRatios[0, vrbl] = np.linalg.norm(mdl[:, vrbl]) / np.linalg.norm(eR[:, vrbl])
-dfsd
+
 
 
 wait = input("Press ENTER to continue")
