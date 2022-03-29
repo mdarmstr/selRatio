@@ -11,57 +11,71 @@ import matplotlib.pyplot as plt
 
 import numpy as np
 
-X, y = fetch_covtype(return_X_y=True)
 
-xTrain, xTest, yTrain, yTest = train_test_split(X, y, test_size=0.5, random_state=42)
+def selectratio():
 
-sz = np.shape(xTrain)
+    cottonPoly = pd.read_csv("CottonvsPolyester.csv", sep=",", header=0)
 
-selRatios = np.zeros((1, sz[1]))
+#this is really ugly
+#X = cottonPoly.iloc[:, 1:]
+#y = cottonPoly.iloc[:, 0]
+#y = pd.get_dummies(y)
+#y = y.iloc[:, 0]
 
-pls = PLSRegression(n_components=5)
+    X = cottonPoly.iloc[:, 1:].to_numpy()
+    y = pd.get_dummies(cottonPoly[:, 0]).to_numpy()
 
-(x_scores, y_scores) = pls.fit_transform(xTrain, yTrain)
+    print(y)
+    xTrain, xTest, yTrain, yTest = train_test_split(X, y, test_size=0.5, random_state=42)
 
-x_loadings = pls.x_loadings_
+    sz = np.shape(xTrain)
 
-mdl = x_scores @ x_loadings.T
+    selRatios = np.zeros((1, sz[1]))
 
-eR = xTrain - x_scores @ x_loadings.T
+    pls = PLSRegression(n_components=5)
 
-for vrbl in range(sz[1]):
-    selRatios[0, vrbl] = np.linalg.norm(mdl[:, vrbl]) / np.linalg.norm(eR[:, vrbl])
+    (x_scores, y_scores) = pls.fit_transform(xTrain, yTrain)
 
-# no selected variables
-stdScaling = preprocessing.StandardScaler()
-xTrainScaled = stdScaling.fit_transform(xTrain)
-xTestScaled = stdScaling.transform(xTest)
+    x_loadings = pls.x_loadings_
 
-pca1 = PCA(n_components=2)
-noSelScrs1 = pca1.fit_transform(xTrainScaled)
-noSelScrs2 = pca1.transform(xTestScaled)
+    mdl = x_scores @ x_loadings.T
 
-fig, axs = plt.subplots(2, 2)
+    eR = xTrain - x_scores @ x_loadings.T
 
-axs[0, 0].scatter(noSelScrs1[:, 0], noSelScrs1[:, 1], c=yTrain, alpha=0.35)
-axs[0, 0].scatter(noSelScrs2[:, 0], noSelScrs2[:, 1], c=yTest, marker="*", alpha=0.35)
-# axs[0, 0].title.set_text("PCA | Ext. Accuracy = %.2f" % pcaAcc)
+    for vrbl in range(sz[1]):
+        selRatios[0, vrbl] = np.linalg.norm(mdl[:, vrbl]) / np.linalg.norm(eR[:, vrbl])
 
-# selected variables
+    # no selected variables
+    stdScaling = preprocessing.StandardScaler()
+    xTrainScaled = stdScaling.fit_transform(xTrain)
+    xTestScaled = stdScaling.transform(xTest)
 
-selFeat = selRatios > 1
+    pca1 = PCA(n_components=2)
+    noSelScrs1 = pca1.fit_transform(xTrainScaled)
+    noSelScrs2 = pca1.transform(xTestScaled)
 
-xTrainSel = xTrain[:, selFeat[0, :]]
-xTestSel = xTest[:, selFeat[0, :]]
+    fig, axs = plt.subplots(2, 2)
 
-stdScaling = preprocessing.StandardScaler()
-xTrainSelScaled = stdScaling.fit_transform(xTrainSel)
-xTestSelScaled = stdScaling.transform(xTestSel)
+    axs[0, 0].scatter(noSelScrs1[:, 0], noSelScrs1[:, 1], c=yTrain, alpha=0.35)
+    axs[0, 0].scatter(noSelScrs2[:, 0], noSelScrs2[:, 1], c=yTest, marker="*", alpha=0.35)
+    # axs[0, 0].title.set_text("PCA | Ext. Accuracy = %.2f" % pcaAcc)
 
-pca2 = PCA(n_components=2)
-SelScrs1 = pca1.fit_transform(xTrainSelScaled)
-SelScrs2 = pca1.transform(xTestSelScaled)
+    # selected variables
 
-plt.show()
+    selFeat = selRatios > 1
 
+    xTrainSel = xTrain[:, selFeat[0, :]]
+    xTestSel = xTest[:, selFeat[0, :]]
 
+    stdScaling = preprocessing.StandardScaler()
+    xTrainSelScaled = stdScaling.fit_transform(xTrainSel)
+    xTestSelScaled = stdScaling.transform(xTestSel)
+
+    pca2 = PCA(n_components=2)
+    SelScrs1 = pca1.fit_transform(xTrainSelScaled)
+    SelScrs2 = pca1.transform(xTestSelScaled)
+
+    plt.show()
+
+if __name__ == "__main__":
+    selectratio()
