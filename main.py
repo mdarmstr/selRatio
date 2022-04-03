@@ -53,7 +53,7 @@ if __name__ == "__main__":
 
     # Now let's select the top variables from VIP scores
     vipr = vipy(xtrains, ytrain, ncomponents=2)
-    vip10idx = np.argsort(selr)[-10:]
+    vip10idx = np.argsort(vipr)[-10:]
 
     pca2 = PCA(n_components=2)
     tscrsvip1 = pca2.fit_transform(xtrains[:, vip10idx])
