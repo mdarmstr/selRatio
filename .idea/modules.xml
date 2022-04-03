@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/.idea/selRatio.iml" filepath="$PROJECT_DIR$/.idea/selRatio.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/varselProject.iml" filepath="$PROJECT_DIR$/.idea/varselProject.iml" />
     </modules>
   </component>
 </project>
